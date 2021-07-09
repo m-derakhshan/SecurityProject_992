@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:clipToPadding="false"
+        android:padding="5dp"
+        android:layout_margin="10dp"
+        android:elevation="10dp"
+        android:background="@drawable/ripple_corner_rounded_rectangle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layoutDirection="rtl"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/purple_rounded_rectangle_10dp"
+            android:backgroundTint="@color/white"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/applicant"
+                android:textAppearance="@style/vazirFont"
+                android:textColor="@color/teal_700" />
+
+            <TextView
+                android:id="@+id/applicant"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:gravity="left"
+                android:textAppearance="@style/vazirFont"
+                tools:ignore="RtlHardcoded" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/purple_rounded_rectangle_10dp"
+            android:backgroundTint="@color/white"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/join_in_account"
+                android:textAppearance="@style/vazirFont"
+                android:textColor="@color/teal_700" />
+
+            <TextView
+                android:id="@+id/join_account_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:gravity="left"
+                android:textAppearance="@style/vazirFont"
+                tools:ignore="RtlHardcoded" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/purple_rounded_rectangle_10dp"
+            android:backgroundTint="@color/white"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/choose_confidentiality_type"
+                android:textAppearance="@style/vazirFont"
+                android:textColor="@color/purple_700" />
+
+            <Spinner
+                android:id="@+id/confidentiality_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/purple_rounded_rectangle_10dp"
+            android:backgroundTint="@color/white"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/choose_integrity_type"
+                android:textAppearance="@style/vazirFont"
+                android:textColor="@color/purple_700" />
+
+            <Spinner
+                android:id="@+id/integrity_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:padding="10dp"
+                android:layout_margin="5dp"
+                android:id="@+id/accept"
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
+                android:text="@string/accept_join"
+                android:textAppearance="@style/vazirFont" />
+
+
+            <Button
+                android:backgroundTint="@color/dark_gray"
+                android:padding="10dp"
+                android:layout_margin="5dp"
+                android:id="@+id/reject"
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
+                android:text="@string/reject_join"
+                android:textAppearance="@style/vazirFont" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</layout>
