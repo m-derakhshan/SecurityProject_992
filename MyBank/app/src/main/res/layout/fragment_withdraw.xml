@@ -97,6 +97,8 @@
                 android:text="@string/get_money"
                 android:textAppearance="@style/vazirFont"
                 android:textColor="@color/white"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/amount"
                 app:spinning_bar_color="@color/white"
                 app:spinning_bar_padding="5dp"

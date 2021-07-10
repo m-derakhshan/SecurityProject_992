@@ -81,10 +81,18 @@ class AccountsFragment : Fragment(), AccountClickListener {
                                 canWrite = info.getBoolean("has_write_access"),
                                 openDate = info.getString("created_at"),
                                 lastIncomes = ArrayList<String>().apply {
-                                    this.add("1")
+                                    val tran = info.getJSONArray("transactions_as_reciever")
+                                    for(j in 0 until tran.length()){
+                                        val tranNumber = tran.getJSONObject(j)
+                                        this.add(tranNumber.getString("amount"))
+                                    }
                                 },
                                 lastOutcome = ArrayList<String>().apply {
-                                    this.add("0")
+                                    val tran = info.getJSONArray("transactions_as_sender")
+                                    for(j in 0 until tran.length()){
+                                        val tranNumber = tran.getJSONObject(j)
+                                        this.add(tranNumber.getString("amount"))
+                                    }
                                 }
                             )
                         )

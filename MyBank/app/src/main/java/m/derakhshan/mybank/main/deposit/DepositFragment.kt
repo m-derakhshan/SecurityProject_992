@@ -67,7 +67,7 @@ class DepositFragment : Fragment() {
                         color = ContextCompat.getColor(requireContext(), R.color.black),
                         msg = "عملیات با موفقیت انجام شد",
                         snackView = binding.root
-                    )
+                    ).show()
 
                 },
                 {
@@ -76,7 +76,7 @@ class DepositFragment : Fragment() {
                         color = ContextCompat.getColor(requireContext(), R.color.black),
                         msg = "خطا در انجام عملیات",
                         snackView = binding.root
-                    )
+                    ).show()
                     try {
                         Log.i(
                             "Log",
