@@ -131,8 +131,8 @@ class MessagesFragment : Fragment(), MessageListener {
     ) {
         val info = JSONObject()
         info.put("status", if (accept) "accepted" else "rejected")
-        info.put("conf_level", confidentiality)
-        info.put("int_level", integrity)
+        info.put("conf_label", confidentiality)
+        info.put("integrity_label", integrity)
 
         val request = object :
             JsonArrayRequest(
