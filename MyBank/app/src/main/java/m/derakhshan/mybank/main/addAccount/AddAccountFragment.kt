@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import com.android.volley.AuthFailureError
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
@@ -54,10 +56,10 @@ class AddAccount : Fragment() {
 
         //-------------------------(setting up the confidentiality type)-----------------------//
         val confidentialityTypeItems = ArrayList<String>()
-        confidentialityTypeItems.add("TopSecret")
-        confidentialityTypeItems.add("Secret")
-        confidentialityTypeItems.add("Confidential")
         confidentialityTypeItems.add("Unclassified")
+        confidentialityTypeItems.add("Confidential")
+        confidentialityTypeItems.add("Secret")
+        confidentialityTypeItems.add("TopSecret")
         val confidentialityTypeOptions =
             ArrayAdapter(
                 requireContext(),
@@ -68,10 +70,10 @@ class AddAccount : Fragment() {
 
         //-------------------------(setting up the integrity type)-----------------------//
         val integrityTypeItems = ArrayList<String>()
-        integrityTypeItems.add("VeryTrusted")
-        integrityTypeItems.add("Trusted")
-        integrityTypeItems.add("SlightlyTrusted")
         integrityTypeItems.add("Untrusted")
+        integrityTypeItems.add("SlightlyTrusted")
+        integrityTypeItems.add("Trusted")
+        integrityTypeItems.add("VeryTrusted")
         val integrityTypeOptions =
             ArrayAdapter(
                 requireContext(),
@@ -87,23 +89,57 @@ class AddAccount : Fragment() {
     }
 
 
+    private fun getAccountTypeID(id: Long): String {
+        return when (id) {
+            1L -> "short-term"
+            2L -> "long-term"
+            3L -> "current"
+            else -> "gharz"
+        }
+    }
+
+
     private fun createNewAccount() {
 
-
         val info = JSONObject()
+        info.put("account_type", getAccountTypeID(binding.accountType.selectedItemId + 1))
+        info.put("conf_label", binding.confidentialityType.selectedItemId + 1)
+        info.put("integrity_label", binding.integrityType.selectedItemId + 1)
+        info.put("amount", binding.balance.text.toString())
+        info.put("user", "")
 
-
-        val request =
+        binding.addAccount.startAnimation()
+        Log.i("Log", "info for creating account is $info")
+        val request = object :
             JsonObjectRequest(
-                Request.Method.POST,
-                Address().loginAPI,
+                Method.POST,
+                Address().createAccount,
                 info,
                 {
                     //-------------------------(server response)-----------------------//
-
+                    Log.i("Log", "response is $it")
+                    binding.addAccount.revertAnimation()
+                    Utils(requireContext()).showSnackBar(
+                        color = ContextCompat.getColor(
+                            requireContext(),
+                            R.color.black
+                        ),
+                        msg = "حساب با موفقیت ایجاد شد",
+                        snackView = binding.root
+                    ).show()
                 },
                 {
+                    binding.addAccount.revertAnimation()
                     try {
+                        Utils(requireContext()).showSnackBar(
+                            color = ContextCompat.getColor(
+                                requireContext(),
+                                R.color.black
+                            ),
+                            msg = "خطا در ایجاد حساب جدید",
+                            snackView = binding.root
+                        ).show()
+
                         Log.i(
                             "Log",
                             "Error in LoginViewModel_login ${
@@ -116,7 +152,15 @@ class AddAccount : Fragment() {
                     } catch (e: Exception) {
                         Log.i("Log", "Error in LoginViewModel_Login $it")
                     }
-                })
+                }) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = "Bearer ${Utils(context = requireContext()).accessToken}"
+
+                return params
+            }
+        }
         request.retryPolicy = DefaultRetryPolicy(
             30000,
             DefaultRetryPolicy.DEFAULT_MAX_RETRIES,

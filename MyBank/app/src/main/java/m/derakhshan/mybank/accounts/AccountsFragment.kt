@@ -5,11 +5,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.AuthFailureError
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import m.derakhshan.mybank.Address
 import m.derakhshan.mybank.R
+import m.derakhshan.mybank.Utils
 import m.derakhshan.mybank.databinding.FragmentAccountsBinding
 
 class AccountsFragment : Fragment(), AccountClickListener {
@@ -36,44 +44,92 @@ class AccountsFragment : Fragment(), AccountClickListener {
         binding.refresh.setOnRefreshListener {
             getAccounts()
         }
-
+        Log.i("Log", "token is ${Utils(context = requireContext()).accessToken}")
         getAccounts()
 
 
     }
 
     private fun getAccounts() {
-        binding.refresh.isRefreshing = false
+        binding.refresh.isRefreshing = true
         val accounts = ArrayList<AccountsModel>()
-        accounts.add(AccountsModel(
-            id = "1",
-            accountNumber = "123",
-            accountBalance = "25000",
-            accountType = "قرض الحسنه",
-            lastIncomes = ArrayList<String>().apply {
-                this.add("5000")
-                this.add("6000")
-                this.add("7000")
-                this.add("8000")
-                this.add("9000")
-            },
-            lastOutcome = ArrayList<String>().apply {
-                this.add("5000")
-                this.add("6000")
-                this.add("7000")
-                this.add("8000")
-                this.add("9000")
-            },
-            openDate = "1400-01-01",
-            owners = ArrayList<String>().apply {
-                this.add("Mohammad")
+
+
+        val request = object :
+            JsonArrayRequest(
+                Method.GET,
+                Address().getAccounts,
+                null,
+                {
+                    binding.refresh.isRefreshing = false
+                    //-------------------------(server response)-----------------------//
+                    for (i in 0 until it.length()) {
+                        val info = it.getJSONObject(i)
+                        accounts.add(
+                            AccountsModel(
+                                id = info.getString("id"),
+                                accountType = info.getString("account_type"),
+                                accountBalance = info.getString("amount"),
+                                owners = ArrayList<String>().apply {
+                                    this.add(info.getString("username"))
+                                },
+                                canRead = info.getBoolean("has_read_access"),
+                                canWrite = info.getBoolean("has_write_access"),
+                                openDate = info.getString("created_at"),
+                                lastIncomes = ArrayList<String>().apply {
+                                    this.add("1")
+                                },
+                                lastOutcome = ArrayList<String>().apply {
+                                    this.add("0")
+                                }
+                            )
+                        )
+                    }
+                    myAdapter.submitList(accounts)
+                },
+                {
+                    binding.refresh.isRefreshing = false
+                    try {
+                        Log.i(
+                            "Log",
+                            "Error in LoginViewModel_login ${
+                                String(
+                                    it.networkResponse.data,
+                                    Charsets.UTF_8
+                                )
+                            }"
+                        )
+                    } catch (e: Exception) {
+                        Log.i("Log", "Error in LoginViewModel_Login $it")
+                    }
+                }) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = "Bearer ${Utils(context = requireContext()).accessToken}"
+                return params
             }
-        ))
-        myAdapter.submitList(accounts)
+        }
+        request.retryPolicy = DefaultRetryPolicy(
+            30000,
+            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
+        Volley.newRequestQueue(requireContext()).add(request)
+
+
     }
 
 
     override fun onClick(account: AccountsModel) {
+        if (!account.canRead) {
+            Utils(requireContext()).showSnackBar(
+                color = ContextCompat.getColor(requireContext(), R.color.black),
+                msg = "شما دسترسی خواندن اطلاعات را ندارید",
+                snackView = binding.root
+            )
+            return
+        }
         val info = Bundle()
         info.putParcelable("info", account)
         findNavController().navigate(R.id.action_accountsFragment_to_accountDetailsFragment, info)

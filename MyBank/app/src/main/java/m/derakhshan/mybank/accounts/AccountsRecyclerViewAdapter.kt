@@ -20,8 +20,7 @@ class AccountsRecyclerViewAdapter :
         }
 
         override fun areContentsTheSame(oldItem: AccountsModel, newItem: AccountsModel): Boolean {
-            return oldItem.accountNumber == newItem.accountNumber &&
-                    oldItem.accountBalance == newItem.accountBalance
+            return oldItem.accountBalance == newItem.accountBalance
         }
 
     }) {
@@ -50,8 +49,9 @@ class AccountsRecyclerViewAdapter :
             binding.root.setOnClickListener {
                 listener.onClick(model)
             }
+            binding.root.alpha = if (model.canRead) 1F else 0.5F
             binding.accountBalance.text = Arrange().persianConverter(model.accountBalance)
-            binding.accountNumber.text = Arrange().persianConverter(model.accountNumber)
+            binding.accountNumber.text = Arrange().persianConverter(model.id)
         }
 
     }
