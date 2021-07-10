@@ -65,7 +65,7 @@ class AccountDetailsFragment : Fragment() {
     }
 
 
-    fun getAccountType(type:String):String{
+    private fun getAccountType(type:String):String{
         return when(type){
             "short-term"->"سپرده پس انداز کوتاه مدت"
             "long-term"->"سپرده پس انداز بلند مدت"
