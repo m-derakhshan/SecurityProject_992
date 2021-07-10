@@ -20,8 +20,10 @@ import org.json.JSONObject
 
 class MessagesFragment : Fragment(), MessageListener {
 
+    var counter = 0
     private lateinit var binding: FragmentMessagesBinding
     private val myAdapter = MessageRecyclerViewAdapter()
+    private val messageList = ArrayList<JoinAccountModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,17 +48,18 @@ class MessagesFragment : Fragment(), MessageListener {
 
 
     private fun getMessages() {
-        val messages = ArrayList<JoinAccountModel>()
 
-        messages.add(
+
+        //-------------------------(remove this line and get it from server)-----------------------//
+        messageList.add(
             JoinAccountModel(
-                id = "1",
+                id = "${counter++}",
                 username = "mohammad",
                 "9526603"
             )
         )
-        myAdapter.submitList(messages)
-
+        myAdapter.submitList(messageList)
+        //-------------------------(remove this line and get it from server)-----------------------//
 
 
         val info = JSONObject()
@@ -64,7 +67,7 @@ class MessagesFragment : Fragment(), MessageListener {
         val request =
             JsonObjectRequest(
                 Request.Method.POST,
-                Address().loginAPI,
+                "",
                 info,
                 {
                     binding.refresh.isRefreshing = false
@@ -104,19 +107,28 @@ class MessagesFragment : Fragment(), MessageListener {
     }
 
 
-
-
-
     override fun onClickListener(
+        position: Int,
         accept: Boolean,
         integrity: String?,
         confidentiality: String?,
-        req: JoinAccountModel?
+        req: JoinAccountModel
     ) {
-        Log.i(
-            "Log", "accept:$accept,integrity:$integrity," +
-                    "confidentiality:$confidentiality,req:$req"
-        )
+        if (accept) {
+            try {
+                messageList.remove(req)
+                myAdapter.notifyItemRemoved(position)
+                Log.i("Log", "list is$messageList \n id: $req \nposition$position")
+
+            } catch (e: Exception) {
+                Log.i("Log", "error in deleting message $e")
+            }
+
+        }
+
+        binding.noMessage.visibility = if (myAdapter.itemCount > 0)
+            View.GONE
+        else View.VISIBLE
     }
 
 

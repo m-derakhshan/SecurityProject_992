@@ -21,9 +21,12 @@
     <string name="choose_confidentiality_type">انتخاب نوع محرمانگی:</string>
     <string name="choose_integrity_type">انتخاب نوع صحت:</string>
     <string name="balance_init">موجودی اولیه حساب</string>
+
+
     <string name="get_money">برداشت وجه</string>
     <string name="transfer_money">واریز وجه</string>
     <string name="join_account">اشتراک حساب</string>
+
     <string name="account_number">شماره حساب</string>
     <string name="account_open_date">تاریخ افتتاح حساب</string>
     <string name="account_owner">صاحبان حساب</string>

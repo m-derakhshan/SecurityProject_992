@@ -43,12 +43,12 @@ class MessageRecyclerViewAdapter :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), position)
 
 
     inner class ViewHolder(val view: JoinRequestItemModelBinding) :
         RecyclerView.ViewHolder(view.root) {
-        fun bind(model: JoinAccountModel) {
+        fun bind(model: JoinAccountModel, position: Int) {
             view.applicant.text = model.username
             view.joinAccountNumber.text = model.accountNumber
 
@@ -84,6 +84,7 @@ class MessageRecyclerViewAdapter :
             //-------------------------(adding accept listener)-----------------------//
             view.accept.setOnClickListener {
                 listener.onClickListener(
+                    position = position,
                     accept = true,
                     integrity = view.integrityType.selectedItem.toString(),
                     confidentiality = view.confidentialityType.selectedItem.toString(),
@@ -93,10 +94,11 @@ class MessageRecyclerViewAdapter :
             //-------------------------(adding reject listener)-----------------------//
             view.reject.setOnClickListener {
                 listener.onClickListener(
+                    position = position,
                     accept = false,
                     integrity = null,
                     confidentiality = null,
-                    req = null
+                    req = model
                 )
             }
 

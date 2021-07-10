@@ -33,6 +33,9 @@ class AccountsFragment : Fragment(), AccountClickListener {
             this.layoutManager = LinearLayoutManager(requireContext())
             this.adapter = myAdapter
         }
+        binding.refresh.setOnRefreshListener {
+            getAccounts()
+        }
 
         getAccounts()
 
@@ -40,6 +43,7 @@ class AccountsFragment : Fragment(), AccountClickListener {
     }
 
     private fun getAccounts() {
+        binding.refresh.isRefreshing = false
         val accounts = ArrayList<AccountsModel>()
         accounts.add(AccountsModel(
             id = "1",
@@ -67,6 +71,7 @@ class AccountsFragment : Fragment(), AccountClickListener {
         ))
         myAdapter.submitList(accounts)
     }
+
 
     override fun onClick(account: AccountsModel) {
         val info = Bundle()

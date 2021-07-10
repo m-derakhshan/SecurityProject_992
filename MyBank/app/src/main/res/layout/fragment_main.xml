@@ -86,6 +86,8 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/transfer_money"
