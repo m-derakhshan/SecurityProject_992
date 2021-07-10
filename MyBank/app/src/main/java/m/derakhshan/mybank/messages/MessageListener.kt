@@ -6,8 +6,8 @@ interface MessageListener {
     fun onClickListener(
         position: Int,
         accept: Boolean,
-        integrity: String?,
-        confidentiality: String?,
+        integrity: Long?,
+        confidentiality: Long?,
         req: JoinAccountModel
     )
 }

@@ -54,10 +54,10 @@ class MessageRecyclerViewAdapter :
 
             //-------------------------(setting up the confidentiality type)-----------------------//
             val confidentialityTypeItems = ArrayList<String>()
-            confidentialityTypeItems.add("TopSecret")
-            confidentialityTypeItems.add("Secret")
-            confidentialityTypeItems.add("Confidential")
             confidentialityTypeItems.add("Unclassified")
+            confidentialityTypeItems.add("Confidential")
+            confidentialityTypeItems.add("Secret")
+            confidentialityTypeItems.add("TopSecret")
             val confidentialityTypeOptions =
                 ArrayAdapter(
                     itemView.context,
@@ -68,10 +68,10 @@ class MessageRecyclerViewAdapter :
 
             //-------------------------(setting up the integrity type)-----------------------//
             val integrityTypeItems = ArrayList<String>()
-            integrityTypeItems.add("VeryTrusted")
-            integrityTypeItems.add("Trusted")
-            integrityTypeItems.add("SlightlyTrusted")
             integrityTypeItems.add("Untrusted")
+            integrityTypeItems.add("SlightlyTrusted")
+            integrityTypeItems.add("Trusted")
+            integrityTypeItems.add("VeryTrusted")
             val integrityTypeOptions =
                 ArrayAdapter(
                     itemView.context,
@@ -86,8 +86,8 @@ class MessageRecyclerViewAdapter :
                 listener.onClickListener(
                     position = position,
                     accept = true,
-                    integrity = view.integrityType.selectedItem.toString(),
-                    confidentiality = view.confidentialityType.selectedItem.toString(),
+                    integrity = view.integrityType.selectedItemId,
+                    confidentiality = view.confidentialityType.selectedItemId,
                     req = model
                 )
             }

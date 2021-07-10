@@ -22,6 +22,10 @@ import m.derakhshan.mybank.databinding.FragmentAccountsBinding
 
 class AccountsFragment : Fragment(), AccountClickListener {
 
+    companion object {
+        var showLoading = true
+    }
+
     private lateinit var binding: FragmentAccountsBinding
     private val myAdapter = AccountsRecyclerViewAdapter()
 
@@ -44,14 +48,14 @@ class AccountsFragment : Fragment(), AccountClickListener {
         binding.refresh.setOnRefreshListener {
             getAccounts()
         }
-        Log.i("Log", "token is ${Utils(context = requireContext()).accessToken}")
         getAccounts()
-
-
     }
 
     private fun getAccounts() {
-        binding.refresh.isRefreshing = true
+        if (showLoading) {
+            binding.refresh.isRefreshing = true
+            showLoading = false
+        }
         val accounts = ArrayList<AccountsModel>()
 
 

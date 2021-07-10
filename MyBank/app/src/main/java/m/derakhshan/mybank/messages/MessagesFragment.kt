@@ -8,19 +8,25 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.AuthFailureError
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
+import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import m.derakhshan.mybank.Address
 import m.derakhshan.mybank.R
+import m.derakhshan.mybank.Utils
 import m.derakhshan.mybank.databinding.FragmentMessagesBinding
 import org.json.JSONObject
 
 
 class MessagesFragment : Fragment(), MessageListener {
 
-    var counter = 0
+    companion object {
+        var showLoading = true
+    }
+
     private lateinit var binding: FragmentMessagesBinding
     private val myAdapter = MessageRecyclerViewAdapter()
     private val messageList = ArrayList<JoinAccountModel>()
@@ -48,33 +54,34 @@ class MessagesFragment : Fragment(), MessageListener {
 
 
     private fun getMessages() {
+        if (showLoading)
+            binding.refresh.isRefreshing = true.also {
+                showLoading = false
+            }
 
-
-        //-------------------------(remove this line and get it from server)-----------------------//
-        messageList.add(
-            JoinAccountModel(
-                id = "${counter++}",
-                username = "mohammad",
-                "9526603"
-            )
-        )
-        myAdapter.submitList(messageList)
-        //-------------------------(remove this line and get it from server)-----------------------//
-
-
-        val info = JSONObject()
-
-        val request =
-            JsonObjectRequest(
-                Request.Method.POST,
-                "",
-                info,
+        val request = object :
+            JsonArrayRequest(
+                Method.GET,
+                Address().joinAccount,
+                null,
                 {
                     binding.refresh.isRefreshing = false
 
                     //-------------------------(server response)-----------------------//
-
-
+                    Log.i("Log", "messages response is$it")
+                    for (i in 0 until it.length()) {
+                        val info = it.getJSONObject(i)
+                        val status = info.getString("status") == "pending"
+                        if (status)
+                            messageList.add(
+                                JoinAccountModel(
+                                    id = info.getString("id"),
+                                    username = info.getString("username"),
+                                    accountNumber = info.getString("requested_account"),
+                                    status = info.getString("status") == "pending"
+                                )
+                            )
+                    }
                     //-------------------------(server response)-----------------------//
 
                     if (myAdapter.itemCount > 0)
@@ -85,7 +92,7 @@ class MessagesFragment : Fragment(), MessageListener {
                     try {
                         Log.i(
                             "Log",
-                            "Error in LoginViewModel_login ${
+                            "Error in messages ${
                                 String(
                                     it.networkResponse.data,
                                     Charsets.UTF_8
@@ -93,9 +100,17 @@ class MessagesFragment : Fragment(), MessageListener {
                             }"
                         )
                     } catch (e: Exception) {
-                        Log.i("Log", "Error in LoginViewModel_Login $it")
+                        Log.i("Log", "Error in messages $it")
                     }
-                })
+                }) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = "Bearer ${Utils(context = requireContext()).accessToken}"
+
+                return params
+            }
+        }
         request.retryPolicy = DefaultRetryPolicy(
             30000,
             DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
@@ -110,25 +125,70 @@ class MessagesFragment : Fragment(), MessageListener {
     override fun onClickListener(
         position: Int,
         accept: Boolean,
-        integrity: String?,
-        confidentiality: String?,
+        integrity: Long?,
+        confidentiality: Long?,
         req: JoinAccountModel
     ) {
-        if (accept) {
-            try {
-                messageList.remove(req)
-                myAdapter.notifyItemRemoved(position)
-                Log.i("Log", "list is$messageList \n id: $req \nposition$position")
+        val info = JSONObject()
+        info.put("status", if (accept) "accepted" else "rejected")
+        info.put("conf_level", confidentiality)
+        info.put("int_level", integrity)
 
-            } catch (e: Exception) {
-                Log.i("Log", "error in deleting message $e")
+        val request = object :
+            JsonArrayRequest(
+                Method.PUT,
+                Address().setStatusJoinAccount(req.id),
+                null,
+                {
+                    binding.refresh.isRefreshing = false
+
+                    try {
+                        messageList.remove(req)
+                        myAdapter.notifyItemRemoved(position)
+                        Log.i("Log", "list is$messageList \n id: $req \nposition$position")
+                        binding.noMessage.visibility = if (myAdapter.itemCount > 0)
+                            View.GONE
+                        else View.VISIBLE
+                    } catch (e: Exception) {
+                        Log.i("Log", "error in deleting message $e")
+                    }
+
+                    //-------------------------(server response)-----------------------//
+                    Log.i("Log", "messages response is$it")
+                    //-------------------------(server response)-----------------------//
+                },
+                {
+                    binding.refresh.isRefreshing = false
+                    try {
+                        Log.i(
+                            "Log",
+                            "Error in accept message ${
+                                String(
+                                    it.networkResponse.data,
+                                    Charsets.UTF_8
+                                )
+                            }"
+                        )
+                    } catch (e: Exception) {
+                        Log.i("Log", "Error in accept message $it")
+                    }
+                }) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = "Bearer ${Utils(context = requireContext()).accessToken}"
+
+                return params
             }
-
         }
+        request.retryPolicy = DefaultRetryPolicy(
+            30000,
+            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
+        Volley.newRequestQueue(requireContext()).add(request)
 
-        binding.noMessage.visibility = if (myAdapter.itemCount > 0)
-            View.GONE
-        else View.VISIBLE
+
     }
 
 
