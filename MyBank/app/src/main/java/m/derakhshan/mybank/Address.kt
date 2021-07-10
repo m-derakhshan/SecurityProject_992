@@ -7,6 +7,8 @@ class Address {
     val createAccount = "$base/api/v1/accounts/"
     val getAccounts = "$base/api/v1/accounts/"
     val joinAccount = "$base/api/v1/accounts/requests/"
+    val depositAccount = "$base/api/v1/accounts/transactions/"
+    val withdrawAccount = "$base/api/v1/accounts/transactions/"
     fun setStatusJoinAccount(id:String) = "$base/api/v1/accounts/requests/$id/"
 
 }

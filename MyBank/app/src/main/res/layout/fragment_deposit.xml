@@ -48,11 +48,11 @@
 
 
             <EditText
-                android:layout_marginTop="20dp"
                 android:id="@+id/toAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/purple_rounded_rectangle_10dp"
                 android:backgroundTint="@color/light_gray"
                 android:hint="@string/to_account"
@@ -75,7 +75,7 @@
                 tools:ignore="Autofill" />
 
             <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
-                android:id="@+id/add_account"
+                android:id="@+id/deposit_money"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
@@ -86,6 +86,8 @@
                 android:text="@string/transfer_money"
                 android:textAppearance="@style/vazirFont"
                 android:textColor="@color/white"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/amount"
                 app:spinning_bar_color="@color/white"
                 app:spinning_bar_padding="5dp" />
