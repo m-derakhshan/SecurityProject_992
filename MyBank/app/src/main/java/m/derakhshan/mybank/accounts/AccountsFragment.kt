@@ -67,6 +67,7 @@ class AccountsFragment : Fragment(), AccountClickListener {
                 {
                     binding.refresh.isRefreshing = false
                     //-------------------------(server response)-----------------------//
+                    Log.i("Log","AccountFragmentResponse:$it")
                     for (i in 0 until it.length()) {
                         val info = it.getJSONObject(i)
                         accounts.add(
@@ -139,7 +140,7 @@ class AccountsFragment : Fragment(), AccountClickListener {
                 color = ContextCompat.getColor(requireContext(), R.color.black),
                 msg = "شما دسترسی خواندن اطلاعات را ندارید",
                 snackView = binding.root
-            )
+            ).show()
             return
         }
         val info = Bundle()
