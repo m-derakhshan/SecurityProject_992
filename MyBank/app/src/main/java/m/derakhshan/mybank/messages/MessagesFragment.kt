@@ -71,7 +71,7 @@ class MessagesFragment : Fragment(), MessageListener {
                     Log.i("Log", "messages response is$it")
                     for (i in 0 until it.length()) {
                         val info = it.getJSONObject(i)
-                        val status = info.getString("status") == "pending"
+                        val status = info.getString("status").toString() == "pending"
                         if (status)
                             messageList.add(
                                 JoinAccountModel(
@@ -83,7 +83,7 @@ class MessagesFragment : Fragment(), MessageListener {
                             )
                     }
                     //-------------------------(server response)-----------------------//
-
+                    myAdapter.submitList(messageList)
                     if (myAdapter.itemCount > 0)
                         binding.noMessage.visibility = View.GONE
                 },
@@ -129,32 +129,32 @@ class MessagesFragment : Fragment(), MessageListener {
         confidentiality: Long?,
         req: JoinAccountModel
     ) {
-        val info = JSONObject()
-        info.put("status", if (accept) "accepted" else "rejected")
-        info.put("conf_label", confidentiality)
-        info.put("integrity_label", integrity)
+        val data = JSONObject()
+        data.put("status", if (accept) "accepted" else "rejected")
+        data.put("conf_label", confidentiality?.plus(1))
+        data.put("integrity_label", integrity?.plus(1))
 
+        Log.i("Log", "info accept is $data and address:${Address().setStatusJoinAccount(req.id)}")
         val request = object :
-            JsonArrayRequest(
+            JsonObjectRequest(
                 Method.PUT,
                 Address().setStatusJoinAccount(req.id),
-                null,
+                data,
                 {
                     binding.refresh.isRefreshing = false
 
                     try {
                         messageList.remove(req)
                         myAdapter.notifyItemRemoved(position)
-                        Log.i("Log", "list is$messageList \n id: $req \nposition$position")
                         binding.noMessage.visibility = if (myAdapter.itemCount > 0)
                             View.GONE
                         else View.VISIBLE
                     } catch (e: Exception) {
-                        Log.i("Log", "error in deleting message $e")
+                        Log.i("Log", "error in accept_delete message $e")
                     }
 
                     //-------------------------(server response)-----------------------//
-                    Log.i("Log", "messages response is$it")
+                    Log.i("Log", "accept_delete response is$it")
                     //-------------------------(server response)-----------------------//
                 },
                 {
