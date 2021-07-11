@@ -65,6 +65,7 @@ class MessagesFragment : Fragment(), MessageListener {
                 Address().joinAccount,
                 null,
                 {
+                    messageList.clear()
                     binding.refresh.isRefreshing = false
 
                     //-------------------------(server response)-----------------------//

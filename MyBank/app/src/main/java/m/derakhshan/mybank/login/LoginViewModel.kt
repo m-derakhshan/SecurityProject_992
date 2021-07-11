@@ -49,7 +49,10 @@ class LoginViewModel(private val showSnackBar: ShowSnackBar, application: Applic
                     Utils(getApplication()).wrongPassRetry++
                     if (Utils(getApplication()).wrongPassRetry > 3) {
                         gotoMainActivity.value = true
-                        Utils(getApplication()).wrongPassRetry = 0
+                        Utils(getApplication()).apply {
+                            this.wrongPassRetry = 0
+                            this.accessToken = ""
+                        }
                     }
                     try {
                         Log.i(
