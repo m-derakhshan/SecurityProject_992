@@ -44,15 +44,22 @@ class LoginViewModel(private val showSnackBar: ShowSnackBar, application: Applic
                     startLoginAnimation.value = false
                 },
                 {
-                    startLoginAnimation.value = false
-                    showSnackBar.snackBar(msg = "خطا در ورود به حساب کاربری")
+
                     Utils(getApplication()).wrongPassRetry++
-                    if (Utils(getApplication()).wrongPassRetry > 3) {
+                    if (Utils(getApplication()).wrongPassRetry > 7) {
                         gotoMainActivity.value = true
                         Utils(getApplication()).apply {
                             this.wrongPassRetry = 0
                             this.accessToken = ""
                         }
+                    }else{
+                        val msg = if (it.networkResponse.statusCode==400)
+                            "نام کاربری یا کلمه ی عبور اشتباه است"
+                        else
+                            "تعداد دفعات تلاش بیش از حد مجاز است.حداقل یک دقیقه باید صبر کنید."
+
+                        startLoginAnimation.value = false
+                        showSnackBar.snackBar(msg = msg)
                     }
                     try {
                         Log.i(
