@@ -67,7 +67,7 @@ class AccountsFragment : Fragment(), AccountClickListener {
                 {
                     binding.refresh.isRefreshing = false
                     //-------------------------(server response)-----------------------//
-                    Log.i("Log","AccountFragmentResponse:$it")
+                    Log.i("Log", "AccountFragmentResponse:$it")
                     for (i in 0 until it.length()) {
                         val info = it.getJSONObject(i)
                         accounts.add(
@@ -83,14 +83,14 @@ class AccountsFragment : Fragment(), AccountClickListener {
                                 openDate = info.getString("created_at"),
                                 lastIncomes = ArrayList<String>().apply {
                                     val tran = info.getJSONArray("transactions_as_reciever")
-                                    for(j in 0 until tran.length()){
+                                    for (j in 0 until tran.length()) {
                                         val tranNumber = tran.getJSONObject(j)
                                         this.add(tranNumber.getString("amount"))
                                     }
                                 },
                                 lastOutcome = ArrayList<String>().apply {
                                     val tran = info.getJSONArray("transactions_as_sender")
-                                    for(j in 0 until tran.length()){
+                                    for (j in 0 until tran.length()) {
                                         val tranNumber = tran.getJSONObject(j)
                                         this.add(tranNumber.getString("amount"))
                                     }
@@ -105,7 +105,7 @@ class AccountsFragment : Fragment(), AccountClickListener {
                     try {
                         Log.i(
                             "Log",
-                            "Error in LoginViewModel_login ${
+                            "Error in getAccounts ${
                                 String(
                                     it.networkResponse.data,
                                     Charsets.UTF_8
@@ -113,7 +113,7 @@ class AccountsFragment : Fragment(), AccountClickListener {
                             }"
                         )
                     } catch (e: Exception) {
-                        Log.i("Log", "Error in LoginViewModel_Login $it")
+                        Log.i("Log", "Error in getAccounts $it")
                     }
                 }) {
             @Throws(AuthFailureError::class)
@@ -136,6 +136,7 @@ class AccountsFragment : Fragment(), AccountClickListener {
 
     override fun onClick(account: AccountsModel) {
         if (!account.canRead) {
+            getDetail(account.id)
             Utils(requireContext()).showSnackBar(
                 color = ContextCompat.getColor(requireContext(), R.color.black),
                 msg = "شما دسترسی خواندن اطلاعات را ندارید",
@@ -146,5 +147,54 @@ class AccountsFragment : Fragment(), AccountClickListener {
         val info = Bundle()
         info.putParcelable("info", account)
         findNavController().navigate(R.id.action_accountsFragment_to_accountDetailsFragment, info)
+    }
+
+
+    private fun getDetail(id: String) {
+
+        val request = object :
+            JsonObjectRequest(
+                Method.GET,
+                Address().getAccountDetail(id),
+                null,
+                {
+                    //-------------------------(server response)-----------------------//
+                    Log.i("Log", "getDetail:$it")
+
+                },
+                {
+                    try {
+                        Utils(requireContext()).showSnackBar(
+                            color = ContextCompat.getColor(requireContext(), R.color.black),
+                            msg = "شما دسترسی خواندن اطلاعات را ندارید",
+                            snackView = binding.root
+                        ).show()
+                        Log.i(
+                            "Log",
+                            "Error in getDetail ${
+                                String(
+                                    it.networkResponse.data,
+                                    Charsets.UTF_8
+                                )
+                            }"
+                        )
+                    } catch (e: Exception) {
+                        Log.i("Log", "Error in getDetail $it")
+                    }
+                }) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = "Bearer ${Utils(context = requireContext()).accessToken}"
+                return params
+            }
+        }
+        request.retryPolicy = DefaultRetryPolicy(
+            30000,
+            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
+        Volley.newRequestQueue(requireContext()).add(request)
+
     }
 }
